@@ -136,7 +136,13 @@ Fill in the pull request template on GitHub. Then answer here:
 
 **7.1** The workflow paused with "awaiting approval" before it ran. Which control is that, in the language of owner, trigger and evidence?
 
+It is a preventive, human-in-the-loop approval control enforcing separation of duties: code from a fork cannot run in the repository's CI until someone with authority approves it. Owner: the repository owner (the instructor / policy owner), not the model author. Trigger: a pull request from a fork to `pouyan1361/governed-ml-midterm` main, which pauses the Governance Gate workflow. Evidence: GitHub records who approved the run and when, and the workflow log plus the uploaded `governance-evidence` artifacts (gate report, model card, audit log) are kept with the pull request.
+
 **7.2** After approval, what did Stage A print about your governance change? Quote it.
+
+Stage A printed:
+"GOVERNANCE CHANGE DETECTED (routed to policy owner for review): governance/policy.json, src/gate.py, tests/test_lab5_gate.py. protections added: pii_columns gained ['date_of_birth', 'zip']; leakage_columns gained ['adjuster_fraud_review', 'renewal_offered']; new threshold min_fpr_ratio = 0.8. Governance change is a tightening or an addition. Allowed, pending owner review. Integrity check passed."
+My changes only added protections, so the integrity check reported them for owner review and let the pull request continue to Stages B and C.
 
 ---
 
