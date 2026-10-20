@@ -150,9 +150,20 @@ My changes only added protections, so the integrity check reported them for owne
 
 **8.1** What did you change on your second branch, and what did `python run_pipeline.py --config configs/v2.json` print locally?
 
+On branch `student/zhihao-xia-cheat` I lowered `min_approval_disparity_ratio`, `min_subgroup_tpr`, `min_tpr_ratio` and `min_fpr_ratio` to 0.50 and `min_subgroup_auc` to 0.55 in `governance/policy.json`. Locally, v2 then printed `DECISION: PASS. This model may proceed to deployment review.` Every check passed: for example subgroup_auc[rural] 0.5937 vs 0.55, approval_disparity_ratio 0.5596 vs 0.50, and fpr_ratio 0.5765 vs 0.50. Nothing on my own machine stopped the biased model.
+
 **8.2** What did Stage A print on GitHub? Quote the refusal line.
 
+"REFUSED: this pull request LOOSENS governance:
+  - min_subgroup_auc LOOSENED from 0.64 to 0.55
+  - min_subgroup_tpr LOOSENED from 0.7 to 0.5
+  - min_approval_disparity_ratio LOOSENED from 0.8 to 0.5
+  - min_tpr_ratio LOOSENED from 0.8 to 0.5
+A model author may tighten a control or add one. Loosening needs the AI Risk Committee, in its own pull request."
+
 **8.3** Which control would NOT have stopped this change on its own, and why do we need both?
+
+The deployment gate (`src/gate.py`, run by the pipeline and in Stage C) would not stop it on its own. It compares the model's metrics against whatever thresholds the policy says, so once the policy is loosened it approves the biased v2 model. The gate controls the model; Stage A controls the policy, so the person being judged cannot rewrite the rules. That is separation of duties. Stage A alone is not enough either: it never evaluates the model, and it only compares against the base branch. My `min_fpr_ratio` drop to 0.50 was reported only as "new threshold min_fpr_ratio = 0.5", not as a loosening, because the base policy has no such key. Owner review through CODEOWNERS is the extra layer that catches that.
 
 ---
 
@@ -160,4 +171,4 @@ My changes only added protections, so the integrity check reported them for owne
 
 I completed this exam individually, using only the permitted materials.
 
-**Signature (type your name):**
+**Signature (type your name):Zhihao Xia
